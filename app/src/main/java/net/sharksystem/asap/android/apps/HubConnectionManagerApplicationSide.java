@@ -6,6 +6,7 @@ import net.sharksystem.SharkException;
 import net.sharksystem.asap.android.app2serviceMessaging.MessageFactory;
 import net.sharksystem.hub.BasicHubConnectionManager;
 import net.sharksystem.hub.HubConnectionManager;
+import net.sharksystem.hub.peerside.HubConnector;
 import net.sharksystem.hub.peerside.HubConnectorDescription;
 
 import java.io.IOException;
@@ -40,6 +41,11 @@ public class HubConnectionManagerApplicationSide
         this.syncLists();
         super.disconnectHub(hcd);
         this.connectionChanged(hcd, false);
+    }
+
+    @Override
+    public HubConnector getHubConnector(HubConnectorDescription hubConnectorDescription) throws SharkException {
+        return null;
     }
 
     public void connectionChanged(

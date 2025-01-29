@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
 
+import net.sharksystem.SharkException;
 import net.sharksystem.asap.ASAPEncounterManager;
 import net.sharksystem.asap.ASAPEncounterManagerImpl;
 import net.sharksystem.asap.ASAPEnvironmentChangesListener;
@@ -35,6 +36,7 @@ import net.sharksystem.utils.SerializationHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -130,7 +132,11 @@ public class ASAPService extends Service
 
     public synchronized ASAPEncounterManager getASAPEncounterManager()  {
         if(this.asapEncounterManager == null) {
-            this.asapEncounterManager = new ASAPEncounterManagerImpl(this.getASAPPeer());
+            try {
+                this.asapEncounterManager = new ASAPEncounterManagerImpl(this.getASAPPeer(), owner);
+            } catch (SharkException | IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return this.asapEncounterManager;

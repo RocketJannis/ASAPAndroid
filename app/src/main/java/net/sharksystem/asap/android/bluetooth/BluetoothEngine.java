@@ -10,7 +10,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 import net.sharksystem.asap.ASAPException;
-import net.sharksystem.asap.EncounterConnectionType;
+import net.sharksystem.asap.ASAPEncounterConnectionType;
 import net.sharksystem.asap.android.service.MacLayerEngine;
 import net.sharksystem.asap.android.service.ASAPService;
 import net.sharksystem.asap.android.Util;
@@ -455,7 +455,7 @@ public class BluetoothEngine extends MacLayerEngine {
                 socket.getInputStream(), socket.getOutputStream(), remoteMacAddress);
 
         this.getASAPService().getASAPEncounterManager().handleEncounter(
-                streamPair, EncounterConnectionType.AD_HOC_LAYER_2_NETWORK, initiator);
+                streamPair, ASAPEncounterConnectionType.AD_HOC_LAYER_2_NETWORK, initiator);
     }
 
     public void propagateStatus(Context ctx) throws ASAPException {

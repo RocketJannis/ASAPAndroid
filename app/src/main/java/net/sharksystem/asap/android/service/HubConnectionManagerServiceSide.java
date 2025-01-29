@@ -13,6 +13,7 @@ import net.sharksystem.asap.android.service2AppMessaging.ASAPServiceRequestNotif
 import net.sharksystem.hub.BasicHubConnectionManager;
 import net.sharksystem.hub.HubConnectionManagerMessageHandler;
 import net.sharksystem.hub.peerside.ASAPHubManagerImpl;
+import net.sharksystem.hub.peerside.HubConnector;
 import net.sharksystem.hub.peerside.HubConnectorDescription;
 import net.sharksystem.hub.peerside.TCPHubConnectorDescriptionImpl;
 
@@ -64,5 +65,10 @@ public class HubConnectionManagerServiceSide
             throw new RuntimeException(e);
         }
         this.context.sendBroadcast(intent);
+    }
+
+    @Override
+    public HubConnector getHubConnector(HubConnectorDescription hubConnectorDescription) throws SharkException {
+        return this.hubManager.getHubConnector(hubConnectorDescription);
     }
 }

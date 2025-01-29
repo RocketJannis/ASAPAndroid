@@ -312,6 +312,16 @@ public class ASAPAndroidPeer extends BroadcastReceiver implements ASAPPeer {
     }
 
     @Override
+    public void setASAPKeyStore(ASAPKeyStore asapKeyStore) {
+        this.getASAPPeerApplicationSide().setASAPKeyStore(asapKeyStore);
+    }
+
+    @Override
+    public ASAPKeyStore getASAPKeyStore() throws ASAPSecurityException {
+        return this.getASAPPeerApplicationSide().getASAPKeyStore();
+    }
+
+    @Override
     public boolean isASAPRoutingAllowed(CharSequence charSequence) throws IOException, ASAPException {
         throw new SharkNotSupportedException("no implemented yet");
     }

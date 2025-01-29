@@ -3,7 +3,7 @@ package net.sharksystem.asap.android.tcpEncounter;
 import android.util.Log;
 
 import net.sharksystem.asap.ASAPEncounterManager;
-import net.sharksystem.asap.EncounterConnectionType;
+import net.sharksystem.asap.ASAPEncounterConnectionType;
 import net.sharksystem.utils.streams.StreamPair;
 import net.sharksystem.utils.streams.StreamPairImpl;
 
@@ -43,7 +43,7 @@ public class TCPClientSocketThread extends Thread {
             Socket socket = new Socket(host, port);
             StreamPair streamPair = StreamPairImpl.getStreamPair(socket.getInputStream(), socket.getOutputStream());
             Log.d(this.getLogStart(), "connected - going to call handleEncounter");
-            encounterManager.handleEncounter(streamPair, EncounterConnectionType.AD_HOC_LAYER_2_NETWORK);
+            encounterManager.handleEncounter(streamPair, ASAPEncounterConnectionType.AD_HOC_LAYER_2_NETWORK);
             notifyListener();
         } catch (IOException e) {
             Log.e(this.getLogStart(), "could not connect: " + e.getLocalizedMessage());

@@ -13,7 +13,7 @@ import net.sharksystem.asap.android.R;
 // TODO do not work with internal classes in any example!!
 import net.sharksystem.asap.android.apps.ASAPActivity;
 import net.sharksystem.asap.engine.ASAPEngineFS;
-import net.sharksystem.utils.fs.FSUtils;
+import net.sharksystem.fs.FSUtils;
 
 import java.io.IOException;
 import java.util.Set;
