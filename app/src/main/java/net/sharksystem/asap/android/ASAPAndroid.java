@@ -14,8 +14,10 @@ public class ASAPAndroid {
     public static final String FOLDER = "folder";
     public static final String RECEIVER = "receiver";
     public static final String ASAP_HOPS = "asapHops";
+    public static final String CONTENT = "content";
 
     public static final String ASAP_CHUNK_RECEIVED_ACTION = "net.sharksystem.asap.received";
+    public static final String ASAP_TRANSIENT_MESSAGE_RECEIVED_ACTION = "net.sharksystem.asap.received.transient";
 
     public static final int PORT_NUMBER = 7777;
 

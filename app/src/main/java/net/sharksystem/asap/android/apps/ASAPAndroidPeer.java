@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import net.sharksystem.SharkException;
 import net.sharksystem.SharkNotSupportedException;
 import net.sharksystem.asap.ASAPChannelContentChangedListener;
 import net.sharksystem.asap.ASAPEnvironmentChangesListener;
@@ -20,7 +21,12 @@ import net.sharksystem.asap.ASAPException;
 import net.sharksystem.asap.ASAPMessageReceivedListener;
 import net.sharksystem.asap.ASAPPeer;
 import net.sharksystem.asap.ASAPPeerFS;
+import net.sharksystem.asap.ASAPSecurityException;
 import net.sharksystem.asap.ASAPStorage;
+import net.sharksystem.asap.android.ASAPTransientMessageReceivedBroadcastIntent;
+import net.sharksystem.asap.crypto.ASAPKeyStore;
+import net.sharksystem.asap.engine.ASAPInMemoTransientMessages;
+import net.sharksystem.fs.ExtraData;
 import net.sharksystem.asap.android.ASAPAndroid;
 import net.sharksystem.asap.android.ASAPChunkReceivedBroadcastIntent;
 import net.sharksystem.asap.android.ASAPServiceCreationIntent;
@@ -586,25 +592,44 @@ public class ASAPAndroidPeer extends BroadcastReceiver implements ASAPPeer {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(this.getLogStart(), "received asap chunk received from asap engine/service");
+        String action = intent.getAction();
+        Log.d(this.getLogStart(), "received intent from asap engine/service, action: " + action);
+
+        if(action == null){
+            Log.i(this.getLogStart(), "null action received -> not handling this intent");
+            return;
+        }
 
         try {
-            ASAPChunkReceivedBroadcastIntent asapReceivedIntent
-                    = new ASAPChunkReceivedBroadcastIntent(intent);
-
-            /*
-    void chunkReceived(String format, String senderE2E, String uri, int era, // E2E part
-                       String senderPoint2Point, boolean verified, boolean encrypted, // Point2Point part
-                       EncounterConnectionType connectionType) throws IOException;
-             */
-            // delegate to local peer proxy
-            this.getASAPPeerApplicationSide().chunkStored(
-                    asapReceivedIntent.getFormat().toString(),
-                    asapReceivedIntent.getSenderE2E().toString(),
-                    asapReceivedIntent.getUri().toString(),
-                    asapReceivedIntent.getEra(),
-                    asapReceivedIntent.getASAPHop()
+            switch (action){
+                case ASAPAndroid.ASAP_CHUNK_RECEIVED_ACTION: {
+                    ASAPChunkReceivedBroadcastIntent asapReceivedIntent
+                            = new ASAPChunkReceivedBroadcastIntent(intent);
+                    this.getASAPPeerApplicationSide().chunkStored(
+                            asapReceivedIntent.getFormat().toString(),
+                            asapReceivedIntent.getSenderE2E().toString(),
+                            asapReceivedIntent.getUri().toString(),
+                            asapReceivedIntent.getEra(),
+                            asapReceivedIntent.getASAPHop()
                     );
+                    break;
+                }
+                case ASAPAndroid.ASAP_TRANSIENT_MESSAGE_RECEIVED_ACTION: {
+                    ASAPTransientMessageReceivedBroadcastIntent transientIntent =
+                            new ASAPTransientMessageReceivedBroadcastIntent(intent);
+                    ASAPInMemoTransientMessages messages = new ASAPInMemoTransientMessages(
+                            transientIntent.getFormat(), transientIntent.getUri(),
+                            transientIntent.getAsapHop().sender(), transientIntent.getAsapHop()
+                    );
+                    messages.addMessage(transientIntent.getContent());
+
+                    this.getASAPPeerApplicationSide().transientMessagesReceived(
+                            messages,
+                            transientIntent.getAsapHop()
+                    );
+                    break;
+                }
+            }
         } catch (ASAPException | IOException e) {
             Log.w(this.getLogStart(), "could call chunk received in local peer proxy: "
                     + e.getLocalizedMessage());
@@ -765,6 +790,10 @@ public class ASAPAndroidPeer extends BroadcastReceiver implements ASAPPeer {
         this.sendASAPMessage(format, uri, message, false);
     }
 
+    public void sendTransientASAPMessage(CharSequence nextHopPeerID, CharSequence appName, CharSequence uri, byte[] message) throws ASAPException, IOException {
+        this.getASAPPeerApplicationSide().sendTransientASAPMessage(nextHopPeerID, appName, uri, message);
+    }
+
     private String getLogStart() {
         return Util.getLogStart(this);
     }
@@ -781,5 +810,10 @@ public class ASAPAndroidPeer extends BroadcastReceiver implements ASAPPeer {
                      ASAPChannelContentChangedListener listener) {
         this.getASAPPeerApplicationSide().
                 removeASAPChannelContentChangedListener(charSequence, listener);
+    }
+
+    @Override
+    public ExtraData getExtraData() throws SharkException, IOException {
+        return this.getASAPPeerApplicationSide().getExtraData();
     }
 }

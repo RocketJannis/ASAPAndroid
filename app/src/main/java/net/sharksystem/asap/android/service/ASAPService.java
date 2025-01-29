@@ -20,6 +20,7 @@ import net.sharksystem.asap.ASAPPeerFS;
 import net.sharksystem.asap.ASAPPeerService;
 import net.sharksystem.asap.android.ASAPChunkReceivedBroadcastIntent;
 import net.sharksystem.asap.android.ASAPServiceCreationIntent;
+import net.sharksystem.asap.android.ASAPTransientMessageReceivedBroadcastIntent;
 import net.sharksystem.asap.android.Util;
 import net.sharksystem.asap.android.bluetooth.BluetoothEngine;
 import net.sharksystem.asap.android.lora.LoRaEngine;
@@ -522,7 +523,7 @@ public class ASAPService extends Service
     //////////////////////////////////////////////////////////////////////////////////////
 
     private boolean broadcastOn = false;
-    private List<ASAPChunkReceivedBroadcastIntent> chunkReceivedBroadcasts = new ArrayList<>();
+    private List<Intent> chunkReceivedBroadcasts = new ArrayList<>();
 
     @Override
     public void chunkStored(String format, String senderE2E, String uri, int era, // E2E part
@@ -540,6 +541,34 @@ public class ASAPService extends Service
             return;
         }
 
+        sendOrStoreBroadcast(intent);
+    }
+
+
+    @Override
+    public void transientMessagesReceived(ASAPMessages asapMessages, ASAPHop asapHop) throws IOException {
+        Iterator<byte[]> iterator = asapMessages.getMessages();
+        while (iterator.hasNext()){
+            byte[] nextMessageBytes = iterator.next();
+            transientMessageReceived(asapMessages.getFormat(), asapMessages.getURI(), nextMessageBytes, asapHop);
+        }
+    }
+
+    private void transientMessageReceived(CharSequence format, CharSequence uri, byte[] content, ASAPHop asapHop){
+        Log.d(this.getLogStart(), "was notified by asap engine that a transient message was received. Uri: " + uri);
+        // issue broadcast
+        ASAPTransientMessageReceivedBroadcastIntent intent;
+        try {
+            intent = new ASAPTransientMessageReceivedBroadcastIntent(format, uri, content, asapHop);
+        } catch (ASAPException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        sendOrStoreBroadcast(intent);
+    }
+
+    private void sendOrStoreBroadcast(Intent intent){
         if(this.broadcastOn) {
             Log.d(this.getLogStart(), "send broadcast");
             this.sendBroadcast(intent);
@@ -548,14 +577,6 @@ public class ASAPService extends Service
             Log.d(this.getLogStart(), "store broadcast in list");
             this.chunkReceivedBroadcasts.add(intent);
         }
-    }
-
-
-    @Override
-    public void transientMessagesReceived(ASAPMessages asapMessages, ASAPHop asapHop) throws IOException {
-        // TODO urgent
-        Log.e(this.getLogStart(), "transientMessagesReceived not yet implemented");
-
     }
 
 

@@ -448,6 +448,7 @@ public class ASAPActivity extends AppCompatActivity implements
         Log.d(this.getLogStart(), "setup asap received bc receiver");
         IntentFilter filter = new IntentFilter();
         filter.addAction(ASAPAndroid.ASAP_CHUNK_RECEIVED_ACTION);
+        filter.addAction(ASAPAndroid.ASAP_TRANSIENT_MESSAGE_RECEIVED_ACTION);
 
         // register
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
