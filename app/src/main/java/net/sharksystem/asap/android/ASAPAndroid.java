@@ -35,5 +35,10 @@ public class ASAPAndroid {
         ASAPAndroid.requiredPermissions.add(Manifest.permission.BLUETOOTH_ADMIN);
         ASAPAndroid.requiredPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         ASAPAndroid.requiredPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ASAPAndroid.requiredPermissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+            ASAPAndroid.requiredPermissions.add(Manifest.permission.BLUETOOTH_ADVERTISE);
+            ASAPAndroid.requiredPermissions.add(Manifest.permission.BLUETOOTH_SCAN);
+        }
     }
 }

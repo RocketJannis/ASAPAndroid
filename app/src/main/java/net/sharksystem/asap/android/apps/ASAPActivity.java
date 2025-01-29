@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -416,7 +417,11 @@ public class ASAPActivity extends AppCompatActivity implements
                 this, this);
 
         // register
-        this.registerReceiver(this.srbc, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.registerReceiver(this.srbc, filter, Context.RECEIVER_EXPORTED);
+        }else{
+            this.registerReceiver(this.srbc, filter);
+        }
     }
 
     private void shutdownASAPServiceNotificationBroadcastReceiver() {
@@ -445,7 +450,11 @@ public class ASAPActivity extends AppCompatActivity implements
         filter.addAction(ASAPAndroid.ASAP_CHUNK_RECEIVED_ACTION);
 
         // register
-        this.registerReceiver(this.getASAPAndroidPeer(), filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.registerReceiver(this.getASAPAndroidPeer(), filter, Context.RECEIVER_EXPORTED);
+        }else{
+            this.registerReceiver(this.getASAPAndroidPeer(), filter);
+        }
     }
 
     private void shutdownASAPChunkReceivedBroadcastReceiver() {

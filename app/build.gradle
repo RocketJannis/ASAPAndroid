@@ -9,12 +9,12 @@ https://developer.android.com/studio/projects/android-library
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         // we produce a library by commenting out that line:
         //applicationId "net.sharksystem.asap.example"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
